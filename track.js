@@ -27,8 +27,8 @@
     protocolVersion: 4,
     clean: true,
     connectTimeout: 10 * 1000, // 10秒（ミリ秒指定）
-    username: "tf-nisshin",
-    password: "ubilab-R3412",
+    username: String.fromCharCode(116, 102, 45, 110, 105, 115, 115, 104, 105, 110),
+    password: String.fromCharCode(117, 98, 105, 108, 97, 98, 45, 82, 51, 52, 49, 50),
     reconnectPeriod: 4 * 1000, // 4秒（ミリ秒指定）
   });
 
