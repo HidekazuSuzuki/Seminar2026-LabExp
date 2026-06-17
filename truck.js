@@ -22,16 +22,6 @@
 
   const MQTT_BROKER_URL = `${MQTT_PROTOCOL}://${MQTT_BROKER_HOST}:${MQTT_BROKER_PORT}${MQTT_WS_PATH}`;
 
-  const MQTT_CONNECT_OPTIONS = Object.freeze({
-    clientId: "123456789",
-    protocolVersion: 4,
-    clean: true,
-    connectTimeout: 10 * 1000, // 10秒（ミリ秒指定）
-    username: String.fromCharCode(116, 102, 45, 110, 105, 115, 115, 104, 105, 110),
-    password: String.fromCharCode(117, 98, 105, 108, 97, 98, 45, 82, 51, 52, 49, 50),
-    reconnectPeriod: 4 * 1000, // 4秒（ミリ秒指定）
-  });
-
   // ===========================================================
   // 地図の初期化
   // ===========================================================
@@ -69,6 +59,7 @@
   // ===========================================================
   // DOM要素
   // ===========================================================
+  const clientIdInput = document.getElementById("clientIdInput");
   const connectBtn = document.getElementById("connectBtn");
   const connectionStatusEl = document.getElementById("connectionStatus");
   const topicInput = document.getElementById("topicInput");
@@ -213,6 +204,22 @@
       // 既に接続済み/接続中の場合は何もしない
       return;
     }
+
+    const clientId = clientIdInput.value.trim();
+    if (!clientId) {
+      window.alert("クライアントIDを入力してください。");
+      return;
+    }
+
+    const MQTT_CONNECT_OPTIONS = Object.freeze({
+      clientId: clientId,
+      protocolVersion: 4,
+      clean: true,
+      connectTimeout: 10 * 1000, // 10秒（ミリ秒指定）
+      username: String.fromCharCode(116, 102, 45, 110, 105, 115, 115, 104, 105, 110),
+      password: String.fromCharCode(117, 98, 105, 108, 97, 98, 45, 82, 51, 52, 49, 50),
+      reconnectPeriod: 4 * 1000, // 4秒（ミリ秒指定）
+    });
 
     setConnectionStatus("connecting", "接続中...");
     connectBtn.disabled = true;
