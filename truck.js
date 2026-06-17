@@ -1,5 +1,5 @@
 /**
- * GarbageTrackMap.html 用スクリプト
+ * GarbageTruckMap.html 用スクリプト
  * MQTT（WSS）でゴミ収集車の位置情報を受信し、Leaflet地図上に
  * 最新の位置情報のみをピンで表示する。
  *
