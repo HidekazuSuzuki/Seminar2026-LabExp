@@ -35,7 +35,7 @@
 
   // 塵芥車アイコン（マーカーを視覚的に区別しやすくする）
   const truckIcon = L.icon({
-    iconUrl: "./assets/icon-truck.png",
+    iconUrl: "assets/icon-truck.png",
     iconSize: [64, 27],
     iconAnchor: [32, 27],
     popupAnchor: [0, -27]
