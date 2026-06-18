@@ -147,10 +147,10 @@
       return null;
     }
 
-    const lat = data.lat ?? data.latitude;
-    const lng = data.lng ?? data.lon ?? data.longitude;
+    const lat = Number(data.LATITUDE ?? data.lat ?? data.latitude);
+    const lng = Number(data.LONGITUDE ?? data.lng ?? data.lon ?? data.longitude);
 
-    if (typeof lat !== "number" || typeof lng !== "number") {
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
       console.error("位置情報メッセージに緯度・経度が見つかりません:", data);
       return null;
     }
@@ -166,6 +166,7 @@
     if (!parsed) return;
 
     const { lat, lng, raw } = parsed;
+    const receivedAt = new Date();
 
     // 古いピンを削除し、最新のピンのみ表示する
     const existingMarker = latestMarkers.get(topic);
@@ -173,20 +174,35 @@
       map.removeLayer(existingMarker);
     }
 
+    const identifier = raw.IDENTIFIER ?? topic;
+    const dateText = raw.DATE ?? "-";
+    const timeText = raw.TIME ?? "-";
+    const altitudeText = raw.ALTITUDE ?? "-";
+    const speedText = raw.SPEED ?? "-";
+    const trackText = raw.TRACK ?? "-";
+
+    const popupHtml = `
+      <div class="truck-popup">
+        <strong>${escapeHtml(String(identifier))}</strong><br>
+        日付: ${escapeHtml(String(dateText))}<br>
+        時刻: ${escapeHtml(String(timeText))}<br>
+        緯度: ${lat.toFixed(6)}<br>
+        経度: ${lng.toFixed(6)}<br>
+        高度: ${escapeHtml(String(altitudeText))}<br>
+        速度: ${escapeHtml(String(speedText))}<br>
+        進行方向: ${escapeHtml(String(trackText))}
+      </div>
+    `;
+
     const marker = L.marker([lat, lng], { icon: truckIcon }).addTo(map);
-    const popupTimeText = new Date().toLocaleTimeString("ja-JP");
-    marker.bindPopup(
-      `<strong>${escapeHtml(topic)}</strong><br>緯度: ${lat.toFixed(
-        6
-      )}<br>経度: ${lng.toFixed(6)}<br>受信時刻: ${popupTimeText}`
-    );
+    marker.bindPopup(popupHtml);
 
     latestMarkers.set(topic, marker);
     latestRecords.set(topic, {
       topic,
       lat,
       lng,
-      receivedAt: new Date(),
+      receivedAt,
       raw,
     });
 
