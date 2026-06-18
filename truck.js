@@ -161,14 +161,11 @@
     const parsed = parsePositionPayload(payloadStr);
     if (!parsed) return;
 
+    const currentCenter = map.getCenter();
+    const currentZoom = map.getZoom();
+
     const { lat, lng, raw } = parsed;
     const receivedAt = new Date();
-
-    // 古いピンを削除し、最新のピンのみ表示する
-    const existingMarker = latestMarkers.get(topic);
-    if (existingMarker) {
-      map.removeLayer(existingMarker);
-    }
 
     const identifier = raw.IDENTIFIER ?? topic;
     const dateText = raw.DATE ?? "-";
@@ -190,10 +187,23 @@
       </div>
     `;
 
-    const marker = L.marker([lat, lng], { icon: truckIcon }).addTo(map);
-    marker.bindPopup(popupHtml);
+    let marker = latestMarkers.get(topic);
 
-    latestMarkers.set(topic, marker);
+    if (marker) {
+      const popupWasOpen = marker.isPopupOpen();
+
+      marker.setLatLng([lat, lng]);
+      marker.setPopupContent(popupHtml);
+
+      if (popupWasOpen) {
+        marker.openPopup();
+      }
+    } else {
+      marker = L.marker([lat, lng], { icon: truckIcon }).addTo(map);
+      marker.bindPopup(popupHtml);
+      latestMarkers.set(topic, marker);
+    }
+
     latestRecords.set(topic, {
       topic,
       lat,
